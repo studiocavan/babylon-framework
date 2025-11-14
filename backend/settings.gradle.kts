@@ -1,1 +1,1 @@
-rootProject.name = "code-generator-backend"
+rootProject.name = "babylon-framework-code-generator-backend"

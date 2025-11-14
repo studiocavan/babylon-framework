@@ -1,6 +1,6 @@
 spring:
   application:
-    name: code-generator-backend
+    name: babylon-framework-generator-backend
   
 server:
   port: 8080

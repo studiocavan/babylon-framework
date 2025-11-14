@@ -55,3 +55,8 @@ data class Metric<T>(
 data class MetricsResponse<T>(
     val metrics: List<Metric<T>>
 )
+
+data class TemplateFile(
+    val name: String,
+    val content: String
+)
