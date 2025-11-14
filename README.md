@@ -111,10 +111,6 @@ cd backend
 # Runs on http://localhost:8080
 ```
 
-### Option 2: Local Development (GUI)
-
-... (if there is any, but there isn't)
-
 ## 🔍 API Endpoints
 
 ### Backend (Spring Boot)
