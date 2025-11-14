@@ -78,6 +78,20 @@ code-generator/
 - **Node.js 18+** (for local frontend development)
 - **JDK 17+** (for local backend development)
 
+### Using the start.sh script
+
+The project includes a `start.sh` script to automate deployment. You can use it as follows:
+
+```bash
+./start.sh
+```
+
+This script will:
+1. Build the Docker images for frontend and backend.
+2. Deploy to Kubernetes by applying all the Kubernetes manifests.
+
+The script is located in the root directory.
+
 ### Option 1: Deploy to Kubernetes (Recommended)
 
 #### Step 1: Build Docker Images
