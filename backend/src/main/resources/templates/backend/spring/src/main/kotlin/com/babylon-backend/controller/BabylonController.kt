@@ -1,38 +1,59 @@
 package templates.backend.spring.src.main.kotlin.com.`babylon-backend`.controller
 
-import com.codegen.model.HealthResponse
-import com.codegen.model.Metric
-import com.codegen.model.MetricsResponse
-import com.codegen.service.CodeGeneratorService
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.Counter
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
-@org.springframework.web.bind.annotation.RestController
-@org.springframework.web.bind.annotation.RequestMapping("/api")
-@org.springframework.web.bind.annotation.CrossOrigin(origins = ["*"])
+data class HealthResponse(val status: String)
+data class Metric(val name: String, val value: Number)
+data class MetricsResponse(val metrics: List<Metric>)
+
+@RestController
+@RequestMapping("/api")
+@CrossOrigin(origins = ["*"])
 class BabylonController(
-    private val codeGeneratorService: com.codegen.service.CodeGeneratorService
+    private val meterRegistry: MeterRegistry
 ) {
+    private val requestCounter: Counter = Counter.builder("api.requests.total")
+        .description("Total number of API requests")
+        .tag("endpoint", "all")
+        .register(meterRegistry)
 
-    @org.springframework.web.bind.annotation.GetMapping("/health")
-    fun health(): org.springframework.http.ResponseEntity<com.codegen.model.HealthResponse> {
-        return org.springframework.http.ResponseEntity.ok(com.codegen.model.HealthResponse(status = "ok"))
+    private val blockedCounter: Counter = Counter.builder("api.requests.blocked")
+        .description("Number of blocked requests")
+        .tag("endpoint", "all")
+        .register(meterRegistry)
+
+    @GetMapping("/health")
+    fun health(): ResponseEntity<HealthResponse> {
+        requestCounter.increment()
+        return ResponseEntity.ok(HealthResponse(status = "ok"))
     }
 
-    @org.springframework.web.bind.annotation.GetMapping("/status")
-    fun status(): org.springframework.http.ResponseEntity<String> {
-        return org.springframework.http.ResponseEntity.ok("starting")
+    @GetMapping("/status")
+    fun status(): ResponseEntity<String> {
+        requestCounter.increment()
+        return ResponseEntity.ok("starting")
     }
 
-    @org.springframework.web.bind.annotation.GetMapping("/metrics")
-    fun metrics(): org.springframework.http.ResponseEntity<com.codegen.model.MetricsResponse<Int>> {
-        val response = com.codegen.model.MetricsResponse(
-            metrics = kotlin.collections.mutableListOf(
-                com.codegen.model.Metric(name = "requestCount", value = 100),
-                com.codegen.model.Metric(name = "requestsBlocked", value = 20)
+    @GetMapping("/metrics")
+    fun metrics(): ResponseEntity<MetricsResponse> {
+        requestCounter.increment()
+
+        val response = MetricsResponse(
+            metrics = listOf(
+                Metric(name = "requestCount", value = requestCounter.count()),
+                Metric(name = "requestsBlocked", value = blockedCounter.count())
             )
         )
 
-        return org.springframework.http.ResponseEntity.ok(response)
+        return ResponseEntity.ok(response)
+    }
+
+    @PostMapping("/simulate-block")
+    fun simulateBlock(): ResponseEntity<String> {
+        blockedCounter.increment()
+        return ResponseEntity.ok("Request blocked")
     }
 }

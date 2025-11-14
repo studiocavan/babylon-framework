@@ -1,0 +1,113 @@
+{
+  "dashboard": {
+    "title": "Babylon Backend - Django",
+    "tags": ["babylon", "django", "backend"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "API Request Rate",
+        "type": "graph",
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "rate(api_requests_total[5m])",
+            "legendFormat": "Requests/sec"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Total API Requests",
+        "type": "stat",
+        "gridPos": {
+          "x": 12,
+          "y": 0,
+          "w": 6,
+          "h": 4
+        },
+        "targets": [
+          {
+            "expr": "api_requests_total",
+            "legendFormat": "Total Requests"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Blocked Requests",
+        "type": "stat",
+        "gridPos": {
+          "x": 18,
+          "y": 0,
+          "w": 6,
+          "h": 4
+        },
+        "targets": [
+          {
+            "expr": "api_requests_blocked",
+            "legendFormat": "Blocked"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Django Request Duration",
+        "type": "graph",
+        "gridPos": {
+          "x": 0,
+          "y": 8,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "rate(django_http_requests_latency_seconds_by_view_method_sum[5m]) / rate(django_http_requests_latency_seconds_by_view_method_count[5m])",
+            "legendFormat": "{{view}} - {{method}}"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Django Requests by View",
+        "type": "graph",
+        "gridPos": {
+          "x": 12,
+          "y": 8,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "rate(django_http_requests_total_by_view_transport_method[5m])",
+            "legendFormat": "{{view}}"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Python Process Info",
+        "type": "graph",
+        "gridPos": {
+          "x": 0,
+          "y": 16,
+          "w": 12,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes",
+            "legendFormat": "Memory"
+          }
+        ]
+      }
+    ],
+    "schemaVersion": 16,
+    "version": 0
+  }
+}
