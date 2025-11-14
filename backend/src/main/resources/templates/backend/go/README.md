@@ -9,13 +9,16 @@ A lightweight Go HTTP server backend template for the Babylon Framework.
 - Health, status, and metrics endpoints
 - Docker support with multi-stage builds
 - Request logging middleware
-- Minimal dependencies (uses only standard library)
+- **Observability**: Prometheus client integration for metrics
+- **Monitoring**: Pre-configured Grafana dashboards
 
 ## API Endpoints
 
 - `GET /api/health` - Health check endpoint
 - `GET /api/status` - Status endpoint
-- `GET /api/metrics` - Metrics endpoint
+- `GET /api/metrics` - Metrics endpoint (JSON format)
+- `POST /api/simulate-block` - Simulate a blocked request
+- `GET /metrics` - Prometheus metrics endpoint
 
 ## Quick Start
 
@@ -38,6 +41,19 @@ go run main.go
 
 The server will start on port 8080 by default.
 
+### With Observability Stack
+
+Run the full stack with Prometheus and Grafana:
+
+```bash
+docker-compose -f docker-compose.observability.yml up -d
+```
+
+Access:
+- **Backend**: http://localhost:8080
+- **Prometheus**: http://localhost:9090
+- **Grafana**: http://localhost:3000 (admin/admin)
+
 ### Docker
 
 Build and run with Docker:
@@ -57,6 +73,17 @@ Example:
 ```bash
 PORT=3000 go run main.go
 ```
+
+## Observability
+
+This template includes comprehensive observability features:
+
+- **Prometheus Go Client**: Native Prometheus metrics
+- **Prometheus**: Metrics collection and storage
+- **Grafana**: Pre-configured dashboards for visualization
+- Automatic Go runtime metrics (memory, goroutines, GC, etc.)
+
+For detailed information, see [OBSERVABILITY.md](OBSERVABILITY.md)
 
 ## API Response Examples
 
@@ -100,14 +127,29 @@ Response:
 }
 ```
 
+### Prometheus Metrics Endpoint
+```bash
+curl http://localhost:8080/metrics
+```
+Returns Prometheus-formatted metrics including:
+- Application metrics (request counts, blocked requests)
+- Go runtime metrics (memory, goroutines, GC)
+- Process metrics (CPU, memory, file descriptors)
+
 ## Project Structure
 
 ```
 .
-├── main.go          # Main application file with HTTP server and endpoints
-├── go.mod           # Go module file
-├── Dockerfile       # Multi-stage Docker build
-└── README.md        # This file
+├── main.go                              # Main application file with HTTP server and endpoints
+├── go.mod                               # Go module file
+├── Dockerfile                           # Multi-stage Docker build
+├── prometheus.yml                       # Prometheus configuration
+├── docker-compose.observability.yml     # Docker Compose for observability stack
+├── grafana/                             # Grafana configuration
+│   ├── dashboards/                      # Pre-configured dashboards
+│   └── datasources/                     # Datasource configurations
+├── OBSERVABILITY.md                     # Observability guide
+└── README.md                            # This file
 ```
 
 ## Production Deployment
@@ -125,8 +167,8 @@ CGO_ENABLED=0 GOOS=linux go build -o babylon-backend .
    - Authentication middleware
    - Rate limiting
    - Structured logging (e.g., with `log/slog` or third-party libraries)
-   - Metrics collection (e.g., Prometheus)
    - Health check enhancements
+   - Distributed tracing
 
 ## Adding Dependencies
 
