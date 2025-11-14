@@ -2,6 +2,8 @@ package com.codegen.controller
 
 import com.codegen.model.GenerateCodeResponse
 import com.codegen.model.HealthResponse
+import com.codegen.model.Metric
+import com.codegen.model.MetricsResponse
 import com.codegen.model.ProjectConfig
 import com.codegen.service.CodeGeneratorService
 import org.springframework.http.ResponseEntity
@@ -17,6 +19,15 @@ class CodeGeneratorController(
     @GetMapping("/health")
     fun health(): ResponseEntity<HealthResponse> {
         return ResponseEntity.ok(HealthResponse(status = "ok"))
+    }
+
+    @GetMapping("/metrics")
+    fun metrics(): ResponseEntity<MetricsResponse<Int>> {
+        val response = MetricsResponse(metrics = mutableListOf(
+            Metric(name = "requestCount", value=100),
+            Metric(name = "requestsBlocked", value=20)))
+
+        return ResponseEntity.ok(response)
     }
 
     @PostMapping("/generate")

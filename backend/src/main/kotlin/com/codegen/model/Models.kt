@@ -46,3 +46,12 @@ data class HealthResponse(
     val service: String = "code-generator-api",
     val timestamp: String = java.time.Instant.now().toString()
 )
+
+data class Metric<T>(
+    val name: String,
+    val value: T
+)
+
+data class MetricsResponse<T>(
+    val metrics: List<Metric<T>>
+)
