@@ -1,6 +1,15 @@
-# Code Generator - Full Stack Application
+# Babylon Framework - All in One Enterprise Stack
 
 A production-ready code generator web application built with **TypeScript React** (frontend) and **Spring Boot with Kotlin** (backend), fully containerized and deployable on Kubernetes with PostgreSQL database.
+
+## Key Features
+- frontend
+- backend
+- analytics
+- eventing
+- observability
+- testing
+- cicd
 
 ## 🏗️ Technology Stack
 
