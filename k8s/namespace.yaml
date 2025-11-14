@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: code-generator
+  labels:
+    name: code-generator

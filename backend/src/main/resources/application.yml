@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: code-generator-backend
+  
+server:
+  port: 8080
+  
+logging:
+  level:
+    com.codegen: INFO
+    org.springframework: INFO

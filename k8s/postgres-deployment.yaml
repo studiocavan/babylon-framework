@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  labels:
+    app: code-generator
+    component: database
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  labels:
+    app: code-generator
+    component: database
+data:
+  POSTGRES_DB: codegen
+  POSTGRES_USER: codegen
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+  labels:
+    app: code-generator
+    component: database
+type: Opaque
+data:
+  POSTGRES_PASSWORD: Y29kZWdlbnBhc3N3b3Jk  # base64 encoded: codegenpassword
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  labels:
+    app: code-generator
+    component: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: code-generator
+      component: database
+  template:
+    metadata:
+      labels:
+        app: code-generator
+        component: database
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_DB
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: postgres-config
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  labels:
+    app: code-generator
+    component: database
+spec:
+  type: ClusterIP
+  selector:
+    app: code-generator
+    component: database
+  ports:
+  - port: 5432
+    targetPort: 5432
