@@ -77,6 +77,7 @@ code-generator/
 - **kubectl** CLI tool
 - **Node.js 18+** (for local frontend development)
 - **JDK 17+** (for local backend development)
+- **Gradle** [installation instructions](https://gradle.org/install/)
 
 ### Using the start.sh script
 
