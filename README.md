@@ -92,18 +92,203 @@ This script will:
 
 The script is located in the root directory.
 
-### Option 1: Deploy to Kubernetes (Recommended)
+### Option  1: Local Development
 
-#### Step 1: Build Docker Images
+#### Frontend Development
 
 ```bash
-# Build frontend
 cd frontend
-docker build -t code-generator-frontend:latest .
+npm install
+npm start
+# Runs on http://localhost:3000
+```
 
-# Build backend
-cd ../backend
-docker build -t code-generator-backend:latest .
+#### Backend Development
+
+```bash
+cd backend
+./gradlew bootRun
+# Runs on http://localhost:8080
+```
+
+### Option 2: Local Development (GUI)
+
+... (if there is any, but there isn't)
+
+## 🔍 API Endpoints
+
+### Backend (Spring Boot)
+
+- `GET /api/health` - Health check endpoint
+- `POST /api/generate` - Generate code
+
+**Generate Code Request:**
+```json
+{
+  "projectName": "my-app",
+  "projectType": "REST_API",
+  "database": "POSTGRESQL",
+  "authentication": true,
+  "features": ["DOCKER", "SWAGGER", "TESTING"]
+}
+```
+
+**Generate Code Response:**
+```json
+{
+  "projectName": "my-app",
+  "files": [
+    {
+      "filename": "package.json",
+      "content": "..."
+    }
+  ],
+  "message": "Code generated successfully"
+}
+```
+
+## 🔧 Kubernetes Management
+
+### View All Resources
+
+```bash
+kubectl get all -n code-generator
+```
+
+### View Logs
+
+```bash
+# Backend logs
+kubectl logs -f deployment/backend-deployment -n code-generator
+
+# Frontend logs
+kubectl logs -f deployment/frontend-deployment -n code-generator
+
+# Database logs
+kubectl logs -f deployment/postgres-deployment -n code-generator
+```
+
+### Scale Deployments
+
+```bash
+# Scale backend
+kubectl scale deployment backend-deployment --replicas=5 -n code-generator
+
+# Scale frontend
+kubectl scale deployment frontend-deployment --replicas=3 -n code-generator
+```
+
+### Check Database
+
+```bash
+# Connect to PostgreSQL
+kubectl exec -it deployment/postgres-deployment -n code-generator -- psql -U codegen -d codegen
+```
+
+### Delete All Resources
+
+```bash
+kubectl delete namespace code-generator
+```
+
+## 📊 Monitoring
+
+### Check Pod Resources
+
+```bash
+kubectl top pods -n code-generator
+kubectl top nodes
+```
+
+### View HPA Status
+
+```bash
+kubectl get hpa -n code-generator
+```
+
+### Check Persistent Volumes
+
+```bash
+kubectl get pvc -n code-generator
+kubectl get pv
+```
+
+## 🚨 Troubleshooting
+
+### Pods Not Starting
+
+```bash
+kubectl describe pod <pod-name> -n code-generator
+kubectl logs <pod-name> -n code-generator
+```
+
+### Backend Can't Connect to Database
+
+```bash
+# Check if PostgreSQL is running
+kubectl get pods -l component=database -n code-generator
+
+# Check database service
+kubectl get svc postgres-service -n code-generator
+
+# Test connection
+kubectl exec -it deployment/backend-deployment -n code-generator -- curl postgres-service:5432
+```
+
+### Image Pull Errors
+
+For local Kubernetes (Docker Desktop/minikube):
+```bash
+# Make sure images are built locally
+docker images | grep code-generator
+
+# For minikube, use minikube's Docker daemon
+eval $(minikube docker-env)
+# Then rebuild images
+```
+
+## 🌐 Ingress Setup (Optional)
+
+If using Ingress:
+
+1. **Install NGINX Ingress Controller:**
+```bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml
+```
+
+2. **Add to /etc/hosts (Linux/Mac) or C:\Windows\System32\drivers\etc\hosts (Windows):**
+```
+127.0.0.1 code-generator.local
+```
+
+3. **Access via:**
+```
+http://code-generator.local
+```
+
+## 📝 Environment Variables
+
+### Frontend
+- `REACT_APP_API_URL` - Backend API URL (default: http://backend-service:8080/api)
+
+### Backend
+- `SERVER_PORT` - Server port (default: 8080)
+- `SPRING_PROFILES_ACTIVE` - Spring profile (development/production)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+MIT License - feel free to use this project for your own purposes.
+
+## 🎓 Learning Resources
+
+- [Spring Boot with Kotlin](https://spring.io/guides/tutorials/spring-boot-kotlin/)
+- [TypeScript React](https://react-typescript-cheatsheet.netlify.app/)
+- [Kubernetes Documentation](https://kubernetes.io/docs/home/)
+- [Gradle Kotlin DSL](https://docs.gradle.org/current/userguide/kotlin_dsl.html)
 ```
 
 #### Step 2: Deploy to Kubernetes
